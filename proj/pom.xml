@@ -3,11 +3,15 @@
   <groupId>suncertify</groupId>
   <artifactId>runme</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <properties>
+  	<maven-jar-plugin.version>2.5</maven-jar-plugin.version>
+  </properties>
   <build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
+				<version>${maven-jar-plugin.version}</version>
 				<configuration>
 					<archive>
 						<manifest>
