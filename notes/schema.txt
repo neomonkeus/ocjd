@@ -3,13 +3,13 @@ Data file Format
 The format of data in the database file is as follows:
 
 Start of file 
-4 byte numeric, magic cookie value. Identifies this as a data file 
-4 byte numeric, total overall length in bytes of each record 
-2 byte numeric, number of fields in each record
+4 byte numeric, (int) magic cookie value. Identifies this as a data file 
+4 byte numeric, (int) total overall length in bytes of each record 
+2 byte numeric, (short) number of fields in each record
 
 Schema description section. 
 Repeated for each field in a record: 
-2 byte numeric, length in bytes of field name 
+2 byte numeric, (short) length in bytes of field name 
 n bytes (defined by previous entry), field name 
 2 byte numeric, field length in bytes 
 end of repeating block

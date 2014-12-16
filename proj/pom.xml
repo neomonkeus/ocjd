@@ -15,7 +15,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>suncertify.Main</mainClass>
+							<mainClass>suncertify.Runner</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

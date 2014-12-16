@@ -1,10 +1,15 @@
 package suncertify.db;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 
-public class DBFileReader implements DBAccess {
+public class DBFileReader {
 
-	public DBFileReader(String dir){
+	private int magiccookie;
+	
+	public DBFileReader(String dir) throws FileNotFoundException{
 		
 		File f = new File(dir);
 		if(!f.exists()){
@@ -12,44 +17,20 @@ public class DBFileReader implements DBAccess {
 			System.exit(0);
 		}
 		System.out.println(f.getName());
+		
+		RandomAccessFile raFile = new RandomAccessFile(f,"r");
+		readHeader(raFile);
 	}
 	
-	
-	public String[] readRecord(long recNo) throws RecordNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void updateRecord(long recNo, String[] data, long lockCookie)
-			throws RecordNotFoundException, SecurityException {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void deleteRecord(long recNo, long lockCookie)
-			throws RecordNotFoundException, SecurityException {
-		// TODO Auto-generated method stub
-
-	}
-
-	public long[] findByCriteria(String[] criteria) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public long createRecord(String[] data) throws DuplicateKeyException {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public long lockRecord(long recNo) throws RecordNotFoundException {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public void unlock(long recNo, long cookie) throws SecurityException {
-		// TODO Auto-generated method stub
-
+	private void readHeader(RandomAccessFile raFile){
+		try {
+			magiccookie = raFile.readInt();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		System.out.println(magiccookie);
 	}
 
 }
