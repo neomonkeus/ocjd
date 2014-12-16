@@ -1,0 +1,36 @@
+Data file Format
+
+The format of data in the database file is as follows:
+
+Start of file 
+4 byte numeric, magic cookie value. Identifies this as a data file 
+4 byte numeric, total overall length in bytes of each record 
+2 byte numeric, number of fields in each record
+
+Schema description section. 
+Repeated for each field in a record: 
+2 byte numeric, length in bytes of field name 
+n bytes (defined by previous entry), field name 
+2 byte numeric, field length in bytes 
+end of repeating block
+
+Data section. 
+Repeat to end of file: 
+1 byte "deleted" flag. 0 implies valid record, 1 implies deleted record 
+Record containing fields in order specified in schema section, no separators between fields, each field fixed length at maximum specified in schema information
+
+End of file
+
+All numeric values are stored in the header information use the formats of the DataInputStream and DataOutputStream classes. All text values, and all fields (which are text only), contain only 8 bit characters, null terminated if less than the maximum length for the field. The character encoding is 8 bit US ASCII.
+
+Database schema
+
+The database that Bodgitt and Scarper uses contains the following fields:
+Field descriptive name			| Database field name	| Field length	| Detailed description
+
+Subcontractor Name				| name					| 32			| The name of the subcontractor this record relates to.
+City							| location				| 64			| The locality in which this contractor works
+Types of work performed			| specialties			| 64			| Comma separated list of types of work this contractor can perform.
+Number of staff in organization	| size					| 6				| The number of workers available when this record is booked
+Hourly charge					| rate					| 8				| Charge per hour for the subcontractor. This field includes the currency symbol
+Customer holding this record	| owner					| 8				| The customer id (an 8 digit number) . Note that for this application,you should assume that both the customers and the CSRs know the customer id. However the booking must always be made by CSR by entering the customer id against the subcontractor details.
