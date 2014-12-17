@@ -1,5 +1,4 @@
 package suncertify;
-import java.io.FileNotFoundException;
 
 import suncertify.db.DBFileReader;
 
@@ -10,12 +9,7 @@ public class TestRunner {
 		if(args.length == 0)
 			System.out.println("No args provided");
 		else{
-			try {
-				DBFileReader reader = new DBFileReader(args[0]);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			DBFileReader reader = new DBFileReader(args[0]);
 		}
 	}
 

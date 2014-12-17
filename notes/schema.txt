@@ -10,8 +10,8 @@ Start of file
 Schema description section. 
 Repeated for each field in a record: 
 2 byte numeric, (short) length in bytes of field name 
-n bytes (defined by previous entry), field name 
-2 byte numeric, field length in bytes 
+n bytes (defined by previous entry), 
+field name 2 byte numeric, (short) field length in bytes 
 end of repeating block
 
 Data section. 
