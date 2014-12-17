@@ -7,10 +7,10 @@ Start of file
 4 byte numeric, (int) total overall length in bytes of each record 
 2 byte numeric, (short) number of fields in each record
 
-Schema description section. 
+Field description. 
 Repeated for each field in a record: 
 2 byte numeric, (short) length in bytes of field name 
-n bytes (defined by previous entry), 
+n bytes byte[field_len] (defined by previous entry), 
 field name 2 byte numeric, (short) field length in bytes 
 end of repeating block
 
