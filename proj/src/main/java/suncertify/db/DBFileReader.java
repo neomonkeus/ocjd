@@ -19,10 +19,9 @@ public class DBFileReader {
 		}
 		System.out.println(f.getName());
 		
-		RandomAccessFile raFile;
 		try {
-			raFile = new RandomAccessFile(f,"r");
-			Header header = new Header(raFile);
+			Header header = new Header(new RandomAccessFile(f,"r"));
+			header.readFile();
 		} catch (FileNotFoundException fnfEx){
 			System.out.println("Could not find file");
 		}
@@ -38,16 +37,17 @@ class Header{
 	private int magicCookie;
 	private int recordLength;
 	private short numFields;
-	private Record[] records;
+	private List<Record> records;
 	private RandomAccessFile raFile;
 	
 	Header(RandomAccessFile raFile) throws IOException{
 		this.raFile = raFile;
+	}
+	public void readFile() throws IOException{
 		readHeader();
 		readFieldInfo();
 		readRecords();
 	}
-	
 	
 	private void readHeader() throws IOException{
 		magicCookie = raFile.readInt();
@@ -70,22 +70,15 @@ class Header{
 	}
 	
 	private void readRecords() throws IOException{
-		records = new Record[1];
-		Record r = new Record();
-		r.readRecord(raFile);
-		System.out.println(r);
-		r.readRecord(raFile);
-		System.out.println(r);
-		r.readRecord(raFile);
-		System.out.println(r);
-		r.readRecord(raFile);
-		System.out.println(r);
-		r.readRecord(raFile);
-		System.out.println(r);
-		r.readRecord(raFile);
-		System.out.println(r);
-		r.readRecord(raFile);
-		System.out.println(r);
+		records = new ArrayList<Record>();
+		for(int i = 0;i < 5;i++){
+			Record r = new Record();
+			r.readRecord(raFile);
+			records.add(r);
+		}
+
+		System.out.println(records);
+		
 	}
 	
 }
@@ -101,17 +94,18 @@ class Field{
 
 	public void readField(RandomAccessFile raFile) throws IOException{
 		namelength = raFile.readShort();
+		
 		byte[] rawname = new byte[namelength];
 		raFile.read(rawname);
 		name = new String(rawname, "US-ASCII" );
 		
 		dataLength = raFile.readShort();
-		rawData = new byte[dataLength];
 
 		totalSize = namelength + name.length() + dataLength;
 	}
 	
 	public void readFieldData(RandomAccessFile raFile) throws IOException{
+		rawData = new byte[dataLength];
 		raFile.readFully(rawData);
 		data = new String(rawData, "US-ASCII" );
 	}
@@ -130,6 +124,11 @@ class Field{
 		s.append("]");
 		return s.toString();
 	}
+	
+	@Override
+	public String toString(){
+		return name;
+	}
 }
 
 class Record{
@@ -137,7 +136,7 @@ class Record{
 	static List<Field> fields;
 	
 	
-	public static void setFields(List fields){
+	public static void setFields(List<Field> fields){
 		Record.fields = fields;
 	}
 	
@@ -151,10 +150,10 @@ class Record{
 	@Override
 	public String toString() {
 		StringBuilder s = new StringBuilder();
-		s.append("Record[");
+		s.append("Record[{");
 		s.append("deleted:");
 		s.append(isdeleted);
-		s.append(",");
+		s.append("},{");
 		
 		Iterator<Field> iter = fields.iterator();
 		boolean hasMore = iter.hasNext();
@@ -163,7 +162,7 @@ class Record{
 			if(hasMore = iter.hasNext())
 				s.append(",");
 		}
-		s.append("]");
+		s.append("}]");
 		return s.toString();
 	}
 }
