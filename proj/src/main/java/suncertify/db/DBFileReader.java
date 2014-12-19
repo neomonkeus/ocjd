@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class DBFileReader {
 
@@ -35,7 +38,6 @@ class Header{
 	private int magicCookie;
 	private int recordLength;
 	private short numFields;
-	private Field[] fields;
 	private Record[] records;
 	private RandomAccessFile raFile;
 	
@@ -57,12 +59,12 @@ class Header{
 	}
 	
 	private void readFieldInfo() throws IOException{
-		fields = new Field[numFields];
+		List<Field> fields = new ArrayList<Field>(numFields);
 		System.out.println("Reading Fields");
 		for(int i = 0; i < numFields; i++){
 			Field field = new Field();
 			field.readField(raFile);
-			fields[i] = field; 
+			fields.add(field); 
 		}
 		Record.setFields(fields);
 	}
@@ -132,9 +134,10 @@ class Field{
 
 class Record{
 	boolean isdeleted = false;
-	static Field[] fields;
+	static List<Field> fields;
 	
-	public static void setFields(Field[] fields){
+	
+	public static void setFields(List fields){
 		Record.fields = fields;
 	}
 	
@@ -148,11 +151,17 @@ class Record{
 	@Override
 	public String toString() {
 		StringBuilder s = new StringBuilder();
-		s.append("Record[deleted:");
+		s.append("Record[");
+		s.append("deleted:");
 		s.append(isdeleted);
-		s.append("[");
-		for(Field f : fields){
-			s.append(f.fieldData());
+		s.append(",");
+		
+		Iterator<Field> iter = fields.iterator();
+		boolean hasMore = iter.hasNext();
+		while(hasMore){
+			s.append(iter.next().fieldData());
+			if(hasMore = iter.hasNext())
+				s.append(",");
 		}
 		s.append("]");
 		return s.toString();
