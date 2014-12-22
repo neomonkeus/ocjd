@@ -75,9 +75,9 @@ class Header{
 			Record r = new Record();
 			r.readRecord(raFile);
 			records.add(r);
+			System.out.println(r);
 		}
 
-		System.out.println(records);
 		
 	}
 	
