@@ -18,7 +18,7 @@ public class DBParser{
 		this.raFile = raFile;
 	}
 	
-	public void readFile() throws IOException{
+	public void parseDBFile() throws IOException{
 		readHeader();
 		readFields();
 		readRecords();
@@ -46,6 +46,8 @@ public class DBParser{
 	
 	private void readRecords() throws IOException{
 		records = new ArrayList<Record>();
+		
+		
 		for(int i = 0;i < 5;i++){
 			Record r = new Record();
 			r.readRecord(raFile);

@@ -18,7 +18,7 @@ public class Field{
 		
 		byte[] rawname = new byte[namelength];
 		raFile.read(rawname);
-		name = new String(rawname, "US-ASCII" );
+		name = new String(rawname, DBSchemaInfo.US_ASCII );
 		
 		dataLength = raFile.readShort();
 
@@ -28,7 +28,7 @@ public class Field{
 	public void readFieldData(RandomAccessFile raFile) throws IOException{
 		rawData = new byte[dataLength];
 		raFile.readFully(rawData);
-		data = new String(rawData, "US-ASCII" );
+		data = new String(rawData, DBSchemaInfo.US_ASCII );
 	}
 	
 	
