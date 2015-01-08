@@ -9,6 +9,7 @@ import java.util.List;
 public class Record{
 	boolean isdeleted = false;
 	static List<Field> fields;
+	static int totalSize;
 	
 	
 	public static void setFields(List<Field> fields){
@@ -20,6 +21,10 @@ public class Record{
 		for(Field f : fields){
 			f.readFieldData(raFile);
 		}
+	}
+	
+	public static void setRecordSize(int totalSize){
+		Record.totalSize = totalSize;
 	}
 	
 	@Override

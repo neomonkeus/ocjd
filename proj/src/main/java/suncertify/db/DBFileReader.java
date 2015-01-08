@@ -18,8 +18,8 @@ public class DBFileReader {
 		System.out.println(f.getName());
 		
 		try {
-			DBParser header = new DBParser(new RandomAccessFile(f,"r"));
-			header.parseDBFile();
+			DBParser parser = new DBParser(new RandomAccessFile(f,"r"));
+			parser.parseDBFile();
 		} catch (FileNotFoundException fnfEx){
 			System.out.println("Could not find file");
 		}

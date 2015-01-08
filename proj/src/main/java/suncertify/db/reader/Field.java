@@ -8,10 +8,11 @@ public class Field{
 	short namelength;
 	String name;
 	short dataLength;
-	int totalSize;
 	
 	byte[] rawData;
 	String data;
+
+	int fieldsize;
 
 	public void readField(RandomAccessFile raFile) throws IOException{
 		namelength = raFile.readShort();
@@ -22,15 +23,18 @@ public class Field{
 		
 		dataLength = raFile.readShort();
 
-		totalSize = namelength + name.length() + dataLength;
+		fieldsize = namelength + name.length() + dataLength;
 	}
 	
 	public void readFieldData(RandomAccessFile raFile) throws IOException{
 		rawData = new byte[dataLength];
 		raFile.readFully(rawData);
-		data = new String(rawData, DBSchemaInfo.US_ASCII );
+		data = new String(rawData, DBSchemaInfo.US_ASCII);
 	}
 	
+	public int getFieldSize(){
+		return fieldsize;
+	}
 	
 	public String fieldData(){
 		return name + ":" + data.trim();

@@ -13,6 +13,7 @@ public class DBParser{
 	private short numFields;
 	private List<Record> records;
 	private RandomAccessFile raFile;
+	public static long START_OF_RECORDS;
 	
 	public DBParser(RandomAccessFile raFile) throws IOException{
 		this.raFile = raFile;
@@ -21,12 +22,13 @@ public class DBParser{
 	public void parseDBFile() throws IOException{
 		readHeader();
 		readFields();
-		readRecords();
+		START_OF_RECORDS = raFile.getFilePointer();
+		readAllRecords();
 	}
 	
 	private void readHeader() throws IOException{
 		magicCookie = raFile.readInt();
-		recordLength = raFile.readInt();
+		Record.setRecordSize(raFile.readInt());
 		numFields = raFile.readShort();
 		System.out.println("Magic Cookie: " + magicCookie);
 		System.out.println("Records total size: " + recordLength);
@@ -44,18 +46,15 @@ public class DBParser{
 		Record.setFields(fields);
 	}
 	
-	private void readRecords() throws IOException{
+	private void readAllRecords() throws IOException{
 		records = new ArrayList<Record>();
-		
-		
-		for(int i = 0;i < 5;i++){
+		while (raFile.getFilePointer() != raFile.length()) {
 			Record r = new Record();
 			r.readRecord(raFile);
 			records.add(r);
-			System.out.println(r);
 		}
-
-		
 	}
+	
+	
 	
 }
