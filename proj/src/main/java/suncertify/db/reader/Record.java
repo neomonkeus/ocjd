@@ -8,6 +8,7 @@ import java.util.List;
 
 public class Record{
 	boolean isdeleted = false;
+
 	static List<Field> fields;
 	static int totalSize;
 	
@@ -15,16 +16,25 @@ public class Record{
 	public static void setFields(List<Field> fields){
 		Record.fields = fields;
 	}
+
+	public static void setRecordSize(int totalSize){
+		Record.totalSize = totalSize;
+	}
+
+	public boolean isDeleted() {
+		return isdeleted;
+	}
 	
 	public void readRecord(RandomAccessFile raFile) throws IOException{
 		isdeleted = raFile.readByte() != 0;
-		for(Field f : fields){
-			f.readFieldData(raFile);
+		if(isdeleted){
+			raFile.seek((raFile.getFilePointer() + totalSize) - 2);
+			System.out.println("Skipping deleted record");
+		} else {
+			for(Field f : fields){
+				f.readFieldString(raFile);
+			}
 		}
-	}
-	
-	public static void setRecordSize(int totalSize){
-		Record.totalSize = totalSize;
 	}
 	
 	@Override

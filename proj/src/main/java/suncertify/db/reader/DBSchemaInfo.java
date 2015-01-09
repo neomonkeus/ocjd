@@ -7,5 +7,7 @@ public class DBSchemaInfo {
 	
 	public static final byte BYTES_MAGIC_COOKIE = 4;
 	
+	public static final short EXPECTED_MAGIC_COOKIE = 513;
+	
 	
 }

@@ -4,13 +4,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import suncertify.db.reader.DBParser;
 
 public class DBFileReader {
 
-	public DBFileReader(String dir){
-		
-		File f = new File(dir);
+	public DBFileReader(String filepath){
+		File f = new File(filepath);
 		if(!f.exists()){
 			System.out.println("Could not find file");
 			System.exit(0);

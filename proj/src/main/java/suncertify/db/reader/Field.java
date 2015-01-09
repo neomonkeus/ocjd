@@ -7,29 +7,23 @@ import java.io.RandomAccessFile;
 public class Field{
 	short namelength;
 	String name;
-	short dataLength;
 	
-	byte[] rawData;
-	String data;
+	short dataLength;
+	String fieldData;
 
 	int fieldsize;
 
 	public void readField(RandomAccessFile raFile) throws IOException{
 		namelength = raFile.readShort();
-		
-		byte[] rawname = new byte[namelength];
-		raFile.read(rawname);
-		name = new String(rawname, DBSchemaInfo.US_ASCII );
+		name = readString(raFile, namelength);
 		
 		dataLength = raFile.readShort();
 
 		fieldsize = namelength + name.length() + dataLength;
 	}
 	
-	public void readFieldData(RandomAccessFile raFile) throws IOException{
-		rawData = new byte[dataLength];
-		raFile.readFully(rawData);
-		data = new String(rawData, DBSchemaInfo.US_ASCII);
+	public void readFieldString(RandomAccessFile raFile) throws IOException{
+		 fieldData = readString(raFile, dataLength);
 	}
 	
 	public int getFieldSize(){
@@ -37,7 +31,7 @@ public class Field{
 	}
 	
 	public String fieldData(){
-		return name + ":" + data.trim();
+		return name + ":" + fieldData.trim();
 	}
 	
 	public String fieldDescription() {
@@ -53,6 +47,12 @@ public class Field{
 	@Override
 	public String toString(){
 		return name;
+	}
+
+	private String readString(RandomAccessFile raFile, int stringlength) throws IOException{
+		byte[] rawString = new byte[namelength];
+		raFile.read(rawString);
+		return new String(rawString, DBSchemaInfo.US_ASCII);
 	}
 }
 
