@@ -1,6 +1,7 @@
 package suncertify.db.reader;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,6 +29,7 @@ public class TestDBParser {
 	private File file;
 	private DBParser parser;
 	private RandomAccessFile raFile;
+	private ByteBuffer buffer;
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -39,10 +41,13 @@ public class TestDBParser {
 
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
+		File file = new File(abspath);
+		file.delete();
 	}
 
 	@Before
 	public void setUp() throws Exception{
+		
 	}
 
 	@After
@@ -75,15 +80,50 @@ public class TestDBParser {
 		parser.readMagicCookie();
 	}
 	
-	private void createMagicCookie(int cookieval) throws FileNotFoundException, IOException{
+	@Test()
+	public void testHeader() throws FileNotFoundException, IOException {
+		//setup
+		int recSize = 123;
+		short numFields = 10;
+		createHeader(recSize, numFields);
 		
+		//run
+		raFile = new RandomAccessFile(abspath, "r");
+		parser = new DBParser(raFile);
+		parser.readHeader();
+		
+		//verify
+		assertThat(Record.totalSize, equalTo(recSize));
+	}
+	
+	
+	private void createHeader(int recSize, short numFields) throws FileNotFoundException, IOException {
 		file = new File(abspath);
 		try(FileOutputStream output = new FileOutputStream(file)){
 			
-			ByteBuffer b = ByteBuffer.allocate(DBSchemaInfo.BYTES_MAGIC_COOKIE);
-			b.putInt(cookieval);
-			output.write(b.array());
+			int headerLength = DBSchemaInfo.BYTES_REC_LENGTH + DBSchemaInfo.BYTES_NUM_FIELDS;
+			buffer = ByteBuffer.allocate(headerLength);
+			buffer.putInt(recSize);
+			buffer.putShort(numFields);
+			output.write(buffer.array());
+		} 
+	}
+
+	private void createMagicCookie(int cookieval) throws FileNotFoundException, IOException{
+		file = new File(abspath);
+		try(FileOutputStream output = new FileOutputStream(file)){
+			
+			buffer = ByteBuffer.allocate(DBSchemaInfo.BYTES_MAGIC_COOKIE);
+			buffer.putInt(cookieval);
+			output.write(buffer.array());
 		} 
 	}
 	
+//	private void createField(Field[] fields) throws FileNotFoundException, IOException{
+//		file = new File(abspath);
+//		try(FileOutputStream output = new FileOutputStream(file)){
+//			buffer = ByteBuffer.allocate();
+//			buffer.
+//		}
+//	}
 }
