@@ -28,11 +28,8 @@ public class DBParser{
 	}
 	
 	void readHeader() throws IOException{
-		Record.setRecordSize(raFile.readInt());
-		System.out.println("Record size: " + recordLength);
-
+		Record.setSize(raFile.readInt());
 		numFields = raFile.readShort();
-		System.out.println("Num fields: " + numFields);
 	}
 	
 	void readMagicCookie() throws IOException{

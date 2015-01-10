@@ -54,6 +54,8 @@ public class Field{
 		raFile.read(rawString);
 		return new String(rawString, DBSchemaInfo.US_ASCII);
 	}
+	
+	
 }
 
 

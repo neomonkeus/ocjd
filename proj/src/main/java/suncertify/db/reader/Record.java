@@ -11,13 +11,13 @@ public class Record{
 
 	static List<Field> fields;
 	static int totalSize;
-	
+	static int totalFields;
 	
 	public static void setFields(List<Field> fields){
 		Record.fields = fields;
 	}
 
-	public static void setRecordSize(int totalSize){
+	public static void setSize(int totalSize){
 		Record.totalSize = totalSize;
 	}
 
@@ -30,10 +30,10 @@ public class Record{
 		if(isdeleted){
 			raFile.seek((raFile.getFilePointer() + totalSize) - 2);
 			System.out.println("Skipping deleted record");
-		} else {
-			for(Field f : fields){
-				f.readFieldString(raFile);
-			}
+			return;
+		} 
+		for(Field f : fields){
+			f.readFieldString(raFile);
 		}
 	}
 	
