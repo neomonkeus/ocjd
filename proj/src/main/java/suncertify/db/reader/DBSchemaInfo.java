@@ -7,9 +7,11 @@ public class DBSchemaInfo {
 	
 	public static final byte BYTES_MAGIC_COOKIE = 4;
 	
-	public static final short EXPECTED_MAGIC_COOKIE = 513;
+	public static final short EXPECTED_MAGIC_COOKIE = 0x201;
 	
 	public static final byte BYTES_REC_LENGTH = 4;
 	
 	public static final byte BYTES_NUM_FIELDS = 2;
+	
+	public static final byte BYTES_REC_DELETED = 2;
 }

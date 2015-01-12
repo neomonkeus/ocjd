@@ -5,33 +5,28 @@ import java.io.RandomAccessFile;
 
 
 public class Field{
-	short namelength;
+	short nameLenght;
 	String name;
 	
-	short dataLength;
-	String fieldData;
+	short valueLength;
+	String value;
 
-	int fieldsize;
+	int headerLength;
 
-	public void readField(RandomAccessFile raFile) throws IOException{
-		namelength = raFile.readShort();
-		name = readString(raFile, namelength);
+	public void readFieldHeader(RandomAccessFile raFile) throws IOException{
+		nameLenght = raFile.readShort();
+		name = readString(raFile, nameLenght);
 		
-		dataLength = raFile.readShort();
-
-		fieldsize = namelength + name.length() + dataLength;
+		valueLength = raFile.readShort();
+		headerLength = nameLenght + name.getBytes().length + valueLength;
 	}
 	
 	public void readFieldString(RandomAccessFile raFile) throws IOException{
-		 fieldData = readString(raFile, dataLength);
-	}
-	
-	public int getFieldSize(){
-		return fieldsize;
+		 value = readString(raFile, valueLength);
 	}
 	
 	public String fieldData(){
-		return name + ":" + fieldData.trim();
+		return name + ":" + value.trim();
 	}
 	
 	public String fieldDescription() {
@@ -39,7 +34,7 @@ public class Field{
 		s.append("Field:[");
 		s.append(name);
 		s.append(":");
-		s.append(dataLength);
+		s.append(valueLength);
 		s.append("]");
 		return s.toString();
 	}
@@ -50,7 +45,7 @@ public class Field{
 	}
 
 	private String readString(RandomAccessFile raFile, int stringlength) throws IOException{
-		byte[] rawString = new byte[namelength];
+		byte[] rawString = new byte[nameLenght];
 		raFile.read(rawString);
 		return new String(rawString, DBSchemaInfo.US_ASCII);
 	}

@@ -9,8 +9,6 @@ import java.util.List;
 public class DBParser{
 	
 	private int magicCookie;
-	private int recordLength;
-	private short numFields;
 	private List<Record> records;
 	private RandomAccessFile raFile;
 	public static long START_OF_RECORDS;
@@ -21,15 +19,13 @@ public class DBParser{
 	
 	public void parseDBFile() throws IOException{
 		readMagicCookie();
-		readHeader();
-		readFields();
+		readFieldHeaders();
 		START_OF_RECORDS = raFile.getFilePointer();
 		readAllRecords();
 	}
 	
-	void readHeader() throws IOException{
-		Record.setSize(raFile.readInt());
-		numFields = raFile.readShort();
+	public List<Record> getRecords(){
+		return records;
 	}
 	
 	void readMagicCookie() throws IOException{
@@ -39,17 +35,11 @@ public class DBParser{
 		}
 	}
 	
-	void readFields() throws IOException{
-		List<Field> fields = new ArrayList<Field>(numFields);
-		System.out.println("Reading Fields");
-		for(int i = 0; i < numFields; i++){
-			Field field = new Field();
-			field.readField(raFile);
-			fields.add(field); 
-		}
-		Record.setFields(fields);
+	void readFieldHeaders() throws IOException{
+		Record.setLength(raFile.readInt());
+		Record.readFieldHeader(raFile);
 	}
-	
+
 	void readAllRecords() throws IOException{
 		records = new ArrayList<Record>();
 		while (raFile.getFilePointer() != raFile.length()) {
@@ -58,7 +48,6 @@ public class DBParser{
 			if(!rec.isDeleted()){
 				records.add(rec);
 			}
-			System.out.println(rec);
 		}
 	}
 	
