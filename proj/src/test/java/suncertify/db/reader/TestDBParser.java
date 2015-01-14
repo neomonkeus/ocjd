@@ -3,6 +3,8 @@ package suncertify.db.reader;
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -80,14 +82,14 @@ public class TestDBParser {
 	@Test()
 	public void testHeader() throws FileNotFoundException, IOException {
 		//setup
-		Field template = createField();
-		short numFields = 10;
-		createFieldHeaders(numFields, template);
+		Header template = createHeader();
+		short numFields = 4;
+		createHeaders(numFields, template);
 		
 		//execute
 		raFile = new RandomAccessFile(abspath, "r");
 		parser = new DBParser(raFile);
-		parser.readFieldHeaders();
+		parser.readHeaders();
 		
 		//verify
 		int recSize = template.headerLength * numFields;
@@ -98,15 +100,15 @@ public class TestDBParser {
 	@Test()
 	public void testRecord() throws FileNotFoundException, IOException {
 		//setup
-		Field template = createField();
-		short numFields = 10;
-		createFieldHeaders(numFields, template);
+		Header template = createHeader();
+		short numFields = 4;
+		createHeaders(numFields, template);
 		createRecords(numFields, template);
 		
 		//execute
 		raFile = new RandomAccessFile(abspath, "r");
 		parser = new DBParser(raFile);
-		parser.readFieldHeaders();
+		parser.readHeaders();
 		parser.readAllRecords();
 		
 		//verify
@@ -114,12 +116,16 @@ public class TestDBParser {
 		assertThat(Record.lengthBytes, equalTo(recSize));
 		assertThat(Record.numFields, equalTo(numFields));
 		List<Record> recs = parser.getRecords();
-		System.out.println(recs);
+		System.out.println("Records:");
+		for(Record r : recs){
+			
+			System.out.println(r);
+		}
 	}
 	
-	private void createRecords(short numFields, Field template) throws FileNotFoundException, IOException {
-		writeRecord(template, numFields, (byte) 0x8000);
-		writeRecord(template, numFields, (byte) 0x0000);
+	private void createRecords(short numFields, Header template) throws FileNotFoundException, IOException {
+		writeRecord(template, numFields, (byte) 1);
+		writeRecord(template, numFields, (byte) 0);
 	}
 
 	private void createMagicCookie(short cookieval) throws FileNotFoundException, IOException{
@@ -130,10 +136,10 @@ public class TestDBParser {
 		} 
 	}
 	
-	private void createFieldHeaders(short numFields, Field template) throws FileNotFoundException, IOException {
+	private void createHeaders(short numFields, Header template) throws FileNotFoundException, IOException {
 		try(FileOutputStream output = new FileOutputStream(file, true)){
 			int headersize = numFields * template.headerLength;
-			buffer = ByteBuffer.allocate(DBSchemaInfo.BYTES_REC_LENGTH + DBSchemaInfo.BYTES_NUM_FIELDS + (headersize * 10));
+			buffer = ByteBuffer.allocate(DBSchemaInfo.BYTES_REC_LENGTH + DBSchemaInfo.BYTES_NUM_FIELDS + (headersize * numFields));
 			buffer.putInt(headersize);
 			
 			//field info
@@ -145,32 +151,34 @@ public class TestDBParser {
 		} 
 	}
 	
-	private void writeFieldHeader(Field template) throws UnsupportedEncodingException{
+	private void writeFieldHeader(Header template) throws IOException{
 		buffer.putShort(template.nameLenght);
 		buffer.put(template.name.getBytes(DBSchemaInfo.US_ASCII));
 		buffer.putShort(template.valueLength);
 	}
 
-	private Field createField(){
+	private Header createHeader(){
 		String name = "name";
 		String value = "value_padded";
 		
-		Field f = new Field();
-		f.nameLenght = (short) name.getBytes().length;
-		f.name = name;
-		f.valueLength = (short) value.getBytes().length;
-		f.value = value;
-		f.headerLength = f.nameLenght + f.name.getBytes().length + f.valueLength;
-		return f;
+		Header h = new Header();
+		h.nameLenght = (short) name.getBytes().length;
+		h.name = name;
+		h.valueLength = (short) value.getBytes().length;
+		h.headerLength = h.nameLenght + h.name.getBytes().length + h.valueLength;
+		return h;
 	}
 
-	private void writeRecord(Field template, short numFields, byte deleted) throws FileNotFoundException, IOException{
+	private void writeRecord(Header template, short numFields, byte deleted) throws FileNotFoundException, IOException{
 		file = new File(abspath);
 		try(FileOutputStream output = new FileOutputStream(file, true)){
-			buffer = ByteBuffer.allocate((DBSchemaInfo.BYTES_REC_DELETED + template.valueLength) * numFields);
+			buffer = ByteBuffer.allocate(Record.lengthBytes);
 			buffer.put(deleted);
+			int len = template.valueLength;
 			for(int i = 0; i < numFields; i++){
-				buffer.put(template.value.getBytes());
+				StringBuilder s = new StringBuilder(len);
+				s.insert(0, i);
+				buffer.put(s.toString().getBytes());
 			}
 			output.write(buffer.array());
 		}

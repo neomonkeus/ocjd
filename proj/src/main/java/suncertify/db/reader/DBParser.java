@@ -19,8 +19,9 @@ public class DBParser{
 	
 	public void parseDBFile() throws IOException{
 		readMagicCookie();
-		readFieldHeaders();
+		readHeaders();
 		START_OF_RECORDS = raFile.getFilePointer();
+		System.out.println("Reading Records");
 		readAllRecords();
 	}
 	
@@ -33,22 +34,26 @@ public class DBParser{
 		if(magicCookie != DBSchemaInfo.EXPECTED_MAGIC_COOKIE){
 			throw new RuntimeException();
 		}
+		System.out.println("Magic Cookie" + magicCookie);
 	}
 	
-	void readFieldHeaders() throws IOException{
-		Record.setLength(raFile.readInt());
-		Record.readFieldHeader(raFile);
+	void readHeaders() throws IOException{
+		int recLength = raFile.readInt();
+		System.out.println("reclength: " + recLength);
+		Record.setLength(recLength);
+		Record.readHeaders(raFile);
 	}
 
 	void readAllRecords() throws IOException{
 		records = new ArrayList<Record>();
 		while (raFile.getFilePointer() != raFile.length()) {
 			Record rec = new Record();
-			rec.readRecord(raFile);
+			rec.readField(raFile);
 			if(!rec.isDeleted()){
 				records.add(rec);
 			}
 		}
+		
 	}
 	
 	
